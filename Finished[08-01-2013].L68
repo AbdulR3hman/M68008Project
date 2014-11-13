@@ -1,0 +1,102 @@
+00000008 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.12.25
+Created On: 08/01/2013 19:47:41
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Program    : Microprocessor Project, 
+00000000                             3  * Written by :Abdul Al-Faraj & Ally Malima 
+00000000                             4  * Date       :08/01/2012
+00000000                             5  * Description:The purpse of this program is to keep polling for a signal from a switch, once the switch is on,
+00000000                             6  *             The system starts to fade the LED from Red to Green, if the swithc is off, 
+00000000                             7  *             The system holds the current color of the LED.
+00000000                             8  *-----------------------------------------------------------
+00000000= 00000000                   9          dc.l    0
+00000004= 00000008                  10          dc.l    8
+00000008                            11                                          
+00000008                            12  START:                          ; first instruction of program
+00000008                            13  
+00000008  11FC 0001 0000            14          MOVE.B  #1, $0000       ; initally set the LED to Red
+0000000E                            15  REST
+0000000E  383C 03E8                 16          MOVE.W  #1000,D4        ; Set Counter for red
+00000012  3A3C 0001                 17          MOVE.W  #1,D5           ; Set Counter for green
+00000016                            18  
+00000016  1C38 2000                 19  SWITCH  MOVE.B  $2000,D6        ; Check for the switch.
+0000001A  CC3C 0001                 20          AND.B   #$01,D6
+0000001E  66F6                      21          BNE     SWITCH
+00000020                            22          
+00000020                            23          
+00000020                            24          
+00000020                            25  FADE                            ; to fade from Red to Green
+00000020  11FC 0001 0000            26          MOVE.B  #1, $0000       ; put the LED Red
+00000026                            27          
+00000026  3404                      28          MOVE.W  D4, D2          ; Set the new timing for Red
+00000028  3605                      29          MOVE.W  D5, D3          ; Set the new timing for Green
+0000002A                            30          
+0000002A                            31  
+0000002A  5342                      32  RED     SUB.W   #1, D2          ;Countdown -Red 
+0000002C  66FC                      33          BNE     RED
+0000002E                            34          
+0000002E  11FC 0000 0000            35          MOVE.B  #0, $0000       ;to put the LED green
+00000034                            36          
+00000034  5343                      37  GREEN   SUB.W   #1, D3          ;Countdown -Green
+00000036  66FC                      38          BNE     GREEN
+00000038                            39  
+00000038  1C38 2000                 40          MOVE.B  $2000,D6        ;Check the switch
+0000003C  CC3C 0001                 41          AND.B   #$01,D6
+00000040  66DE                      42          BNE     FADE            ; if the switch isn't press
+00000042                            43                                  ; hold the current LED colour, else
+00000042  5245                      44          ADD.W   #1,D5           ; increment Green Length 
+00000044  5344                      45          SUB.W   #1,D4           ; decrement red length
+00000046  B87C 0000                 46          CMP.W   #0,D4           ; check if the LED is currently FULLY green
+0000004A  66D4                      47          BNE     FADE            ; Go back to fade if the decrementing of D4 isn't complete              
+0000004C                            48                  
+0000004C  383C 0001                 49          MOVE.W  #1,D4           ; Set Counter for red
+00000050  3A3C 03E8                 50          MOVE.W  #1000,D5        ; Set Counter for green
+00000054                            51  
+00000054                            52                                  
+00000054                            53          
+00000054                            54  FADE2                           ; FADE2, is to fade from red to green
+00000054  3404                      55          MOVE.W  D4, D2          ; TO set counter for red
+00000056  3605                      56          MOVE.W  D5, D3          ; TO set counter for green      
+00000058  11FC 0000 0000            57          MOVE.B  #0, $0000       ; To put the LED green
+0000005E                            58          
+0000005E  5343                      59  GREEN2  SUB.W   #1, D3          ;Countdown -Green
+00000060  66FC                      60          BNE     GREEN2
+00000062                            61  
+00000062                            62  
+00000062  11FC 0001 0000            63          MOVE.B  #1, $0000       ; put the LED Red
+00000068                            64          
+00000068  5342                      65  RED2    SUB.W   #1, D2          ;Countdown -Green
+0000006A  66FC                      66          BNE     RED2
+0000006C                            67          
+0000006C                            68  
+0000006C                            69  
+0000006C  1C38 2000                 70          MOVE.B  $2000,D6       ;Check switch
+00000070  CC3C 0001                 71          AND.B   #$01,D6        ; if not pressed,
+00000074  66DE                      72          BNE     FADE2          ; Hold color
+00000076                            73                                 ; Else
+00000076  5244                      74          ADD.W   #1,D4          ; increment Red Length 
+00000078  5345                      75          SUB.W   #1,D5          ; decrement Green Length 
+0000007A  BA7C 0000                 76          CMP.W   #0,D5          ; check if the LED completly RED
+0000007E  66D4                      77          BNE     FADE2
+00000080                            78          
+00000080  609E                      79          BRA     FADE           ; To return to the first state.
+00000082                            80  
+00000082                            81          END     START           ; last line of source, End Program
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+FADE                20
+FADE2               54
+GREEN               34
+GREEN2              5E
+RED                 2A
+RED2                68
+REST                E
+START               8
+SWITCH              16
